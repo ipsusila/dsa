@@ -40,6 +40,10 @@ func NewStringTree(r io.Reader, arg StringTreeArg) *Tree[string] {
 				values[n] = transform(values[i])
 				n++
 			}
+		} else if transform != nil {
+			for i := 0; i < n; i++ {
+				values[i] = transform(values[i])
+			}
 		}
 		tree.Insert(values[:n])
 	}
