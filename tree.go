@@ -3,6 +3,7 @@ package dsa
 import (
 	"fmt"
 	"io"
+	"math"
 	"sort"
 
 	"golang.org/x/exp/constraints"
@@ -48,6 +49,8 @@ type Tree[T NodeType] struct {
 	so    SortOrder
 	root  *Node[T]
 	name  string
+	maxd  int
+	mind  int
 	fnSrc SearchFn[T]
 }
 
@@ -57,6 +60,8 @@ func NewTree[T NodeType](name string) *Tree[T] {
 		so:   Unsorted,
 		root: new(Node[T]),
 		name: name,
+		maxd: 0,
+		mind: math.MaxInt,
 	}
 	t.fnSrc = t.searchSeq
 	return &t
@@ -242,7 +247,26 @@ func (t *Tree[T]) insertNode(parent *Node[T], values []T) {
 
 // Insert values to tree
 func (t *Tree[T]) Insert(values []T) {
+	nvals := len(values)
+	t.maxd = Max(nvals, t.maxd)
+	t.mind = Min(nvals, t.mind)
 	t.insertNode(t.root, values)
+}
+
+// MaxDepth return maksimum tree depth
+func (t *Tree[T]) MaxDepth() int {
+	if t.Empty() {
+		return 0
+	}
+	return t.maxd
+}
+
+// MinDepth return minimum tree depth
+func (t *Tree[T]) MinDepth() int {
+	if t.Empty() {
+		return 0
+	}
+	return t.mind
 }
 
 func (t *Tree[T]) printTo(w io.Writer, nodes Nodes[T], indent string) {
